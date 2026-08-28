@@ -1,0 +1,417 @@
+{
+  "name": "Nexo - Distribución (HITL)",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "authentication": "airtableTokenApi",
+        "baseId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "app9kqKH8btJO26m1"
+        },
+        "tableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "tbltkLw41eFujeqac"
+        },
+        "triggerField": "Última Modificación",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.airtableTrigger",
+      "typeVersion": 1,
+      "position": [
+        -640,
+        144
+      ],
+      "id": "c95a46cd-19ce-488f-be79-ce5ebd18e6a7",
+      "name": "Airtable Trigger",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "FvS9zVYr8oyNguh4",
+          "name": "Airtable Personal Access Token account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "a2a412c7-969e-45d2-bb13-c510f0813b2e",
+              "leftValue": "={{ $json.fields.Aprobado }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "7a2d0004-3637-47ee-829f-b6148f51ccbe",
+              "leftValue": "={{ $json.fields.Estado }}",
+              "rightValue": "Procesado por IA",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -416,
+        144
+      ],
+      "id": "77861119-a7d3-4624-b59b-4a98cd25cbd6",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0BT27LVCF3",
+          "mode": "list",
+          "cachedResultName": "aprobaciones"
+        },
+        "text": "=✅ PUBLICADO — Aprobado por {{ $json.fields['Aprobado por'] }}\n\n{{ $json.fields['Borrador IA'] }}\n\n(Este contenido pasó el control de calidad humano y está listo para publicar en LinkedIn.)",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.7,
+      "position": [
+        -176,
+        128
+      ],
+      "id": "82d29f87-2354-4d8a-916e-085c0dc6d77b",
+      "name": "Send a message",
+      "webhookId": "d70f3383-5179-48f0-8b77-2567f16c7c8a",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "RGuW7qinc4tVRPTd",
+          "name": "Slack account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "app9kqKH8btJO26m1",
+          "mode": "id"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbltkLw41eFujeqac",
+          "mode": "id"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Estado": "Publicado",
+            "Fecha Aprobación": "={{ $now }}",
+            "id": "={{ $('If').item.json.id }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Idea Semilla",
+              "displayName": "Idea Semilla",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Tema",
+              "displayName": "Tema",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Monotributo",
+                  "value": "Monotributo"
+                },
+                {
+                  "name": "Facturación",
+                  "value": "Facturación"
+                },
+                {
+                  "name": "Impuestos",
+                  "value": "Impuestos"
+                },
+                {
+                  "name": "Servicios",
+                  "value": "Servicios"
+                },
+                {
+                  "name": "General",
+                  "value": "General"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Tono",
+              "displayName": "Tono",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Educativo",
+                  "value": "Educativo"
+                },
+                {
+                  "name": "Cercano",
+                  "value": "Cercano"
+                },
+                {
+                  "name": "Formal",
+                  "value": "Formal"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Estado",
+              "displayName": "Estado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Borrador",
+                  "value": "Borrador"
+                },
+                {
+                  "name": "Generando",
+                  "value": "Generando"
+                },
+                {
+                  "name": "Pendiente Aprobación",
+                  "value": "Pendiente Aprobación"
+                },
+                {
+                  "name": "Aprobado",
+                  "value": "Aprobado"
+                },
+                {
+                  "name": "Publicado",
+                  "value": "Publicado"
+                },
+                {
+                  "name": "Error",
+                  "value": "Error"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Borrador IA",
+              "displayName": "Borrador IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Aprobado",
+              "displayName": "Aprobado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Aprobado por",
+              "displayName": "Aprobado por",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Fecha Aprobación",
+              "displayName": "Fecha Aprobación",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Log de Error",
+              "displayName": "Log de Error",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Última Modificación",
+              "displayName": "Última Modificación",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "51e4cc6a-b056-432a-a2bf-e8b05463bd75",
+      "name": "Update record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "FvS9zVYr8oyNguh4",
+          "name": "Airtable Personal Access Token account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "8596643012",
+        "text": "=✅ PUBLICADO — Aprobado por {{ $json.fields['Aprobado por'] }}  {{ $json.fields['Borrador IA'] }}  Este contenido pasó el control de calidad humano y está listo para publicar.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        16,
+        224
+      ],
+      "id": "6f4527c8-de9a-4408-a7ef-4d981e6aa4c2",
+      "name": "Send a text message",
+      "webhookId": "69527c5d-eff0-4cad-adf0-e29d4622b1f3",
+      "credentials": {
+        "telegramApi": {
+          "id": "XNgU19QmXOogFSNR",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Airtable Trigger": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Update record",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "823b9894-942c-4f8d-9dd7-c43ebd70a35c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ed46b5fc3d89fae81c1c7d9dcee1348a62db224768a13fb3c0dbb15526e094ff"
+  },
+  "nodeGroups": [],
+  "id": "5LETSQOPBbMJ0HzK",
+  "tags": []
+}

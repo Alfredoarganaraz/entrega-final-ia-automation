@@ -1,0 +1,207 @@
+{
+  "name": "Nexo - Manejo de Errores",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "3b0f7c48-9b5e-4764-8a3f-84b96fc66c78",
+      "name": "Error Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "app9kqKH8btJO26m1",
+          "mode": "id"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblQbtm27JsI9bhc5",
+          "mode": "id"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Workflow": "={{ $json.workflow.name }}",
+            "Nodo": "={{ $json.execution.lastNodeExecuted }}",
+            "Mensaje de Error": "={{ $json.execution.error.message }}",
+            "Estado Error": "Nuevo"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Workflow",
+              "displayName": "Workflow",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Nodo",
+              "displayName": "Nodo",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Mensaje de Error",
+              "displayName": "Mensaje de Error",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Fecha",
+              "displayName": "Fecha",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Estado Error",
+              "displayName": "Estado Error",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Nuevo",
+                  "value": "Nuevo"
+                },
+                {
+                  "name": "Revisado",
+                  "value": "Revisado"
+                },
+                {
+                  "name": "Resuelto",
+                  "value": "Resuelto"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Creado",
+              "displayName": "Creado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "a8161144-3b3c-4fae-a90a-1974e634a4dd",
+      "name": "Create a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "k7vZTskXs8gg9thV",
+          "name": "Airtable Personal Access Token account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0BTC66LR7T",
+          "mode": "list",
+          "cachedResultName": "errores"
+        },
+        "text": "=🚨 ERROR EN EL SISTEMA\n\nWorkflow: {{ $('Error Trigger').item.json.workflow.name }}\nNodo: {{ $('Error Trigger').item.json.execution.lastNodeExecuted }}\nError: {{ $('Error Trigger').item.json.execution.error.message }}\n\nRegistrado en Log de Errores. Revisar.",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.7,
+      "position": [
+        448,
+        0
+      ],
+      "id": "97b9dfd9-fe96-49cc-bc83-4b9657877428",
+      "name": "Send a message",
+      "webhookId": "745893b1-2a29-4409-95f3-683c9536af12",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "RGuW7qinc4tVRPTd",
+          "name": "Slack account 3"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Create a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a record": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "18370d15-4f0f-4fec-8404-0ff19dc5dc44",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ed46b5fc3d89fae81c1c7d9dcee1348a62db224768a13fb3c0dbb15526e094ff"
+  },
+  "nodeGroups": [],
+  "id": "1s9OkfNk9DJUjW8o",
+  "tags": []
+}
